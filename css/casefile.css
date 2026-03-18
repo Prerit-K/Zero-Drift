@@ -1,0 +1,165 @@
+/* ============================================================
+   css/casefile.css
+   ZERO DRIFT — Case File Mode (feature 10)
+   Additional styles that extend layout.css case file rules.
+============================================================ */
+
+/* ── Hole punch marks — left margin ── */
+body.case-file-mode .reading-area::before {
+  content:     '';
+  position:    absolute;
+  left:        -18px;
+  top:         12%;
+  width:       12px;
+  height:      12px;
+  border-radius: 50%;
+  background:  transparent;
+  border:      1px solid rgba(80, 70, 50, 0.18);
+  box-shadow:  inset 0 0 4px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index:     3;
+}
+
+/* Second hole punch */
+body.case-file-mode .chapter-header::before {
+  content:     '';
+  position:    absolute;
+  left:        -18px;
+  top:         55%;
+  width:       12px;
+  height:      12px;
+  border-radius: 50%;
+  background:  transparent;
+  border:      1px solid rgba(80, 70, 50, 0.15);
+  box-shadow:  inset 0 0 4px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+body.case-file-mode .chapter-header {
+  position: relative;
+}
+
+/* ── Evidence stamp — chapter fragment ── */
+body.case-file-mode .chapter-fragment::before {
+  content:        'CASE_FILE // ';
+  color:          rgba(120, 90, 40, 0.45);
+  letter-spacing: 0.08em;
+}
+
+/* ── Redaction bars on scene breaks ── */
+body.case-file-mode .novel-text .break::before {
+  content:   '████████████████████████████████';
+  color:     rgba(60, 50, 30, 0.25);
+  font-size: var(--text-xs);
+  letter-spacing: 0;
+  opacity:   1;
+}
+
+/* ── Margin annotations ──
+   Occasional faint notes in the right margin,
+   styled as handwritten case annotations.
+   Applied to every 5th paragraph via nth-child.
+── */
+body.case-file-mode .novel-text p:nth-child(5n)::after {
+  content:        attr(data-annotation);
+  position:       absolute;
+  right:          -4.5rem;
+  top:            0;
+  width:          4rem;
+  font-size:      0.48rem;
+  color:          rgba(120, 100, 50, 0.30);
+  letter-spacing: 0.04em;
+  line-height:    1.5;
+  text-align:     left;
+  pointer-events: none;
+  transform:      rotate(1.5deg);
+  white-space:    normal;
+  word-break:     break-word;
+}
+
+body.case-file-mode .novel-text {
+  position: relative;
+}
+
+body.case-file-mode .novel-text p {
+  position: relative;
+}
+
+/* ── Faded page number footer ── */
+body.case-file-mode .chapter-nav::before {
+  content:        'VELTHAN_PD // COLD_REVIEW // CLASSIFIED';
+  display:        block;
+  position:       absolute;
+  bottom:         var(--sp-2);
+  left:           50%;
+  transform:      translateX(-50%);
+  font-size:      var(--text-xs);
+  color:          rgba(100, 85, 50, 0.20);
+  letter-spacing: 0.12em;
+  white-space:    nowrap;
+  pointer-events: none;
+}
+
+body.case-file-mode .chapter-nav {
+  position: relative;
+}
+
+/* ── Tape marks ── top corners */
+body.case-file-mode .reading-area > header::after {
+  content:     '';
+  position:    absolute;
+  top:         -8px;
+  right:       var(--sp-8);
+  width:       38px;
+  height:      14px;
+  background:  rgba(180, 160, 90, 0.06);
+  border:      1px solid rgba(160, 140, 70, 0.10);
+  transform:   rotate(-1.5deg);
+  pointer-events: none;
+}
+
+/* ── Highlight marks on first paragraph ──
+   Simulates a detective having underlined key text.
+── */
+body.case-file-mode .novel-text p:first-of-type {
+  border-bottom: 1px solid rgba(140, 110, 40, 0.12);
+  padding-bottom: var(--sp-1);
+}
+
+/* ── Matters block as sticky note ── */
+body.case-file-mode .matters-block {
+  background:   rgba(80, 65, 20, 0.12);
+  border-left:  3px solid rgba(160, 130, 50, 0.25);
+  border-top:   1px solid rgba(140, 115, 45, 0.15);
+  border-right: 1px solid rgba(140, 115, 45, 0.10);
+  transform:    rotate(0.4deg);
+  box-shadow:   3px 3px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.case-file-mode .matters-block::before {
+  color: rgba(160, 120, 40, 0.55);
+}
+
+body.case-file-mode .matters-block p {
+  color: rgba(170, 145, 90, 0.70) !important;
+}
+
+/* ── Washed-out signal bar in case file mode ── */
+body.case-file-mode #chapterSignalBar {
+  color:   rgba(120, 100, 60, 0.45);
+  filter:  sepia(0.5);
+}
+
+body.case-file-mode #povLabel {
+  color:   rgba(100, 85, 50, 0.35);
+}
+
+/* ── Remove case file styles from print ── */
+@media print {
+  body.case-file-mode .reading-area::before,
+  body.case-file-mode .chapter-header::before,
+  body.case-file-mode .reading-area > header::after,
+  body.case-file-mode .chapter-nav::before {
+    display: none;
+  }
+}

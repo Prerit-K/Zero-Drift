@@ -1,0 +1,479 @@
+/* ============================================================
+   css/atmosphere.css
+   ZERO DRIFT — Ghost Encoding Lens
+   Rewritten: added coffee maker (feature 13)
+============================================================ */
+
+
+/* ============================================================
+   BODY PSEUDO-ELEMENTS
+   CRT scanlines + vignette
+============================================================ */
+
+body::after {
+  content:        '';
+  position:       fixed;
+  inset:          0;
+  z-index:        5;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.018) 3px,
+    rgba(0, 0, 0, 0.018) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
+body::before {
+  content:        '';
+  position:       fixed;
+  inset:          0;
+  z-index:        4;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 90% 85% at 50% 50%,
+    transparent          45%,
+    rgba(2, 4, 3, 0.40)  72%,
+    rgba(2, 4, 3, 0.78) 100%
+  );
+}
+
+
+/* ============================================================
+   LAYER 1 — BACKGROUND
+============================================================ */
+
+.atmo-background {
+  position:       fixed;
+  inset:          0;
+  z-index:        var(--z-bg);
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 15% 10%,
+      rgba(10, 18, 22, 0.90) 0%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 55% 40% at 80% 45%,
+      rgba(8, 18, 12, 0.70) 0%,
+      transparent 100%
+    ),
+    linear-gradient(
+      165deg,
+      #040709 0%,
+      #030506 35%,
+      #040807 65%,
+      #030405 100%
+    );
+}
+
+
+/* ============================================================
+   LAYER 2 — INTERFERENCE GRID
+============================================================ */
+
+.atmo-grid {
+  position:       fixed;
+  inset:          0;
+  z-index:        1;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 27px,
+      rgba(30, 55, 35, 0.045) 27px,
+      rgba(30, 55, 35, 0.045) 28px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 27px,
+      rgba(30, 55, 35, 0.045) 27px,
+      rgba(30, 55, 35, 0.045) 28px
+    );
+  animation: gridDrift 120s linear infinite;
+}
+
+@keyframes gridDrift {
+  0%   { background-position: 0 0,         0 0; }
+  100% { background-position: 28px 28px, 28px 28px; }
+}
+
+
+/* ============================================================
+   LAYER 3 — GRAVITATIONAL WAVE RINGS
+============================================================ */
+
+.atmo-waves {
+  position:       fixed;
+  inset:          0;
+  z-index:        2;
+  pointer-events: none;
+  --origin-x: 28%;
+  --origin-y: 58%;
+}
+
+.wave-ring {
+  position:      absolute;
+  left:          var(--origin-x);
+  top:           var(--origin-y);
+  transform:     translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  width:         var(--size);
+  height:        var(--size);
+  border:        1px solid rgba(45, 120, 60, 0.12);
+  background:    transparent;
+  animation:     waveExpand var(--speed) ease-out var(--delay) infinite;
+}
+
+@keyframes waveExpand {
+  0% {
+    width:        var(--size);
+    height:       var(--size);
+    opacity:      0.55;
+    border-color: rgba(45, 120, 60, 0.18);
+  }
+  40% { border-color: rgba(38, 95, 52, 0.10); }
+  85% {
+    opacity:      0.02;
+    border-color: rgba(30, 70, 40, 0.04);
+  }
+  100% {
+    width:        200vmax;
+    height:       200vmax;
+    opacity:      0;
+    border-color: transparent;
+  }
+}
+
+.wave-ring:nth-child(2) { border-color: rgba(38, 95, 60, 0.09); }
+.wave-ring:nth-child(3) { border-color: rgba(30, 75, 50, 0.07); }
+
+
+/* ============================================================
+   LAYER 4 — CANVAS
+============================================================ */
+
+.atmo-canvas {
+  position:       fixed;
+  inset:          0;
+  z-index:        3;
+  pointer-events: none;
+  width:          100vw;
+  height:         100vh;
+  mix-blend-mode: screen;
+  opacity:        0.65;
+}
+
+
+/* ============================================================
+   SIGNAL ANIMATIONS
+============================================================ */
+
+.signal-flicker {
+  animation: signalFlicker 6s ease-in-out infinite;
+}
+
+@keyframes signalFlicker {
+  0%,  100% { opacity: 1;   }
+  88%       { opacity: 1;   }
+  89%       { opacity: 0.3; }
+  90%       { opacity: 1;   }
+  93%       { opacity: 0.7; }
+  94%       { opacity: 1;   }
+}
+
+.signal-dot {
+  display:       inline-block;
+  width:         5px;
+  height:        5px;
+  border-radius: 50%;
+  background:    #3a9a50;
+  flex-shrink:   0;
+  animation:     dotPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%,  100% { opacity: 1;    box-shadow: 0 0 4px #3a9a50; }
+  48%       { opacity: 0.15; box-shadow: none; }
+  52%       { opacity: 0.15; box-shadow: none; }
+}
+
+@keyframes charStatic {
+  0%,  90%, 100% { opacity: 1;   }
+  91%            { opacity: 0.4; }
+  92%            { opacity: 1;   }
+  95%            { opacity: 0.6; }
+  96%            { opacity: 1;   }
+}
+
+.reading-area::before {
+  content:        '';
+  position:       fixed;
+  top:            0;
+  right:          calc(50% - var(--content-max) / 2 - 2.5rem);
+  width:          1px;
+  height:         100vh;
+  pointer-events: none;
+  z-index:        6;
+  background: linear-gradient(
+    180deg,
+    transparent              0%,
+    rgba(45, 120, 60, 0.06) 30%,
+    rgba(45, 120, 60, 0.12) 50%,
+    rgba(45, 120, 60, 0.06) 70%,
+    transparent             100%
+  );
+  animation: dataStream 9s ease-in-out 2s infinite;
+}
+
+@keyframes dataStream {
+  0%,  100% { opacity: 0; transform: scaleY(0); transform-origin: top;    }
+  10%       { opacity: 1; transform: scaleY(1); transform-origin: top;    }
+  80%       { opacity: 1; transform: scaleY(1); transform-origin: top;    }
+  95%       { opacity: 0; transform: scaleY(0); transform-origin: bottom; }
+}
+
+
+/* ============================================================
+   FEATURE 13 — THE DEAD COFFEE MAKER
+   
+   A pure CSS illustration in the bottom-right corner.
+   Built from layered box-shadows and border-radius.
+   
+   Structure:
+   .coffee-maker          — outer wrapper, positions everything
+   .coffee-maker__body    — the main machine body
+   .coffee-maker__carafe  — the glass carafe below
+   .coffee-maker__light   — the orange standby power light
+   .coffee-maker__steam   — three animated steam wisps
+   
+   Behavior:
+   - Light glows orange on all chapters except ch30
+   - Chapter 30: light fades out (unplugged)
+     Handled by body.chapter-30 class added in chapters.js
+   - Hovering reveals a tooltip: "// STILL_RUNNING"
+   - On chapter 30: tooltip reads "// SIGNAL_LOST"
+============================================================ */
+
+.coffee-maker {
+  position:       fixed;
+  bottom:         var(--sp-6);
+  left:           var(--sp-5);
+  z-index:        calc(var(--z-lens) + 1);
+  pointer-events: auto;
+  cursor:         default;
+
+  /* Hide by default on small screens */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Tooltip ── */
+.coffee-maker::after {
+  content:        '// STILL_RUNNING';
+  position:       absolute;
+  bottom:         calc(100% + 8px);
+  left:           50%;
+  transform:      translateX(-50%);
+  white-space:    nowrap;
+  font-family:    var(--font-mono);
+  font-size:      var(--text-xs);
+  color:          var(--c-amber-dim);
+  letter-spacing: 0.10em;
+  background:     rgba(7, 10, 8, 0.95);
+  border:         1px solid var(--c-border-dim);
+  padding:        2px 6px;
+
+  opacity:    0;
+  transition: opacity var(--t-fast);
+  pointer-events: none;
+}
+
+.coffee-maker:hover::after {
+  opacity: 1;
+}
+
+/* Chapter 30 — light out, different tooltip */
+body.chapter-30 .coffee-maker::after {
+  content: '// SIGNAL_LOST';
+  color:   var(--c-text-dim);
+}
+
+/* ── Main body ── */
+.coffee-maker__body {
+  width:         22px;
+  height:        28px;
+  background:    rgba(18, 24, 20, 0.95);
+  border:        1px solid rgba(45, 60, 48, 0.50);
+  border-bottom: none;
+  border-radius: 2px 2px 0 0;
+  position:      relative;
+  display:       flex;
+  align-items:   flex-end;
+  justify-content: center;
+  padding-bottom: 4px;
+
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.03),
+    inset -1px 0 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ── Power light ── */
+.coffee-maker__light {
+  width:         5px;
+  height:        5px;
+  border-radius: 50%;
+  background:    #c17f30;
+  box-shadow:
+    0 0 4px  #c17f30,
+    0 0 8px  rgba(193, 127, 48, 0.5);
+  animation: lightGlow 3s ease-in-out infinite;
+  transition: background 1.2s ease, box-shadow 1.2s ease;
+}
+
+@keyframes lightGlow {
+  0%,  100% {
+    background: #c17f30;
+    box-shadow: 0 0 4px #c17f30, 0 0 8px rgba(193, 127, 48, 0.5);
+  }
+  50% {
+    background: #d4922a;
+    box-shadow: 0 0 6px #d4922a, 0 0 12px rgba(212, 146, 42, 0.6);
+  }
+}
+
+/* Chapter 30 — light goes dark */
+body.chapter-30 .coffee-maker__light {
+  background: rgba(30, 24, 16, 0.8);
+  box-shadow: none;
+  animation:  none;
+}
+
+/* ── Carafe ── */
+.coffee-maker__carafe {
+  width:         18px;
+  height:        14px;
+  background:    rgba(10, 14, 11, 0.85);
+  border:        1px solid rgba(40, 55, 42, 0.45);
+  border-top:    1px solid rgba(60, 80, 62, 0.55);
+  border-radius: 0 0 4px 4px;
+  position:      relative;
+
+  /* Faint liquid level inside carafe */
+  background-image: linear-gradient(
+    180deg,
+    rgba(8, 12, 9, 0) 0%,
+    rgba(8, 12, 9, 0) 35%,
+    rgba(30, 20, 10, 0.65) 35%,
+    rgba(20, 14, 6,  0.80) 100%
+  );
+
+  box-shadow: inset 0 -1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Chapter 30 — carafe is empty */
+body.chapter-30 .coffee-maker__carafe {
+  background-image: none;
+  background: rgba(10, 14, 11, 0.60);
+}
+
+/* ── Steam wisps ── */
+.coffee-maker__steam {
+  display:         flex;
+  gap:             4px;
+  justify-content: center;
+  height:          14px;
+  align-items:     flex-end;
+  margin-bottom:   1px;
+}
+
+.coffee-maker__steam span {
+  display:       block;
+  width:         2px;
+  border-radius: 1px;
+  background:    linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(130, 160, 135, 0.25) 100%
+  );
+  transform-origin: bottom center;
+}
+
+/* Three wisps with different heights and timing */
+.coffee-maker__steam span:nth-child(1) {
+  height: 8px;
+  animation: steamRise 2.2s ease-in-out 0.0s infinite;
+}
+.coffee-maker__steam span:nth-child(2) {
+  height: 12px;
+  animation: steamRise 2.2s ease-in-out 0.7s infinite;
+}
+.coffee-maker__steam span:nth-child(3) {
+  height: 7px;
+  animation: steamRise 2.2s ease-in-out 1.4s infinite;
+}
+
+@keyframes steamRise {
+  0% {
+    opacity:   0;
+    transform: scaleY(0.4) translateY(2px);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity:   0.2;
+    transform: scaleY(1.2) translateY(-3px);
+  }
+  100% {
+    opacity:   0;
+    transform: scaleY(1.4) translateY(-5px);
+  }
+}
+
+/* Chapter 30 — no more steam */
+body.chapter-30 .coffee-maker__steam span {
+  animation: none;
+  opacity:   0;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 600px) {
+  .atmo-waves {
+    --origin-x: 50%;
+    --origin-y: 60%;
+  }
+  .atmo-grid { opacity: 0.6; }
+
+  /* Hide coffee maker on very small screens */
+  .coffee-maker { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-ring,
+  .atmo-grid,
+  .signal-dot,
+  .signal-flicker,
+  .reading-area::before,
+  .coffee-maker__steam span,
+  .coffee-maker__light {
+    animation: none;
+  }
+  .wave-ring    { opacity: 0.04; }
+  .coffee-maker__light {
+    background: #c17f30;
+    box-shadow: 0 0 4px #c17f30;
+  }
+}

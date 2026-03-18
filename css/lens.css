@@ -1,0 +1,397 @@
+/* ============================================================
+   css/lens.css
+   ZERO DRIFT — Ghost Encoding Lens
+
+   This file owns exactly one mechanic: the decryption lens.
+
+   HOW IT WORKS (read this once):
+   ─────────────────────────────
+   .lens-overlay is a fixed div that covers the entire
+   viewport (z-index: 100 — above content, below sidebar).
+
+   Its background is a radial-gradient with a transparent
+   circle at the center. The circle's center coordinates
+   are --cx and --cy, CSS custom properties written on
+   <html> by js/lens.js on every mousemove event.
+
+   Inside the circle  → transparent → text is visible
+   Outside the circle → dark overlay → text is hidden
+
+   pointer-events: none means all clicks, hovers, and
+   scrolling pass through the overlay to the content below.
+
+   The lens radius is --radius, also a CSS custom property
+   updated by the range slider in the sidebar (js/lens.js).
+
+   STATES:
+   ─────────────────────────────
+   Default (page load)   — lens centered, no cursor yet
+   .has-cursor           — added to <html> on first mousemove
+   .lens-overlay.active  — added when cursor is on screen
+   .lens-overlay.idle    — added after 3s without movement
+
+   MOBILE:
+   ─────────────────────────────
+   On touch devices (hover: none), .lens-overlay is hidden.
+   Tap-to-reveal is used instead (styles at bottom of file).
+   Gyroscope fallback is handled purely in js/lens.js —
+   no additional CSS needed.
+   ============================================================ */
+
+
+/* ============================================================
+   LENS OVERLAY
+   ============================================================ */
+
+.lens-overlay {
+  position:       fixed;
+  inset:          0;
+  z-index:        var(--z-lens);
+  pointer-events: none;
+
+  /* ── The core gradient ────────────────────────────────────
+     Circle centered on --cx, --cy with radius --radius.
+
+     Stop breakdown:
+       0%  → 38%   transparent     the "decrypted" zone
+       38% → 48%   soft fade       lens edge — gentle not harsh
+       48% → 62%   mid opacity     transition band
+       62% → 100%  near-opaque     the "encrypted" zone
+
+     The transition band is deliberately wide (10%) so the
+     lens edge feels like light diffusion rather than a hard
+     mask. This reads as physical rather than digital.
+  ──────────────────────────────────────────────────────── */
+  background: radial-gradient(
+    circle var(--radius) at var(--cx) var(--cy),
+    transparent                    0%,
+    transparent                    38%,
+    rgba(3, 4, 5, 0.42)           48%,
+    rgba(3, 4, 5, 0.82)           62%,
+    rgba(3, 4, 5, 0.96)          100%
+  );
+
+  /* Short transition keeps the lens tight to the cursor.
+     Any longer and it lags visibly — breaks the mechanic. */
+  transition: background 0.03s linear;
+}
+
+
+/* ============================================================
+   ACTIVE STATE
+   Added to .lens-overlay when cursor is on screen.
+   Adds a faint green rim at the lens boundary.
+   ============================================================ */
+
+.lens-overlay.active {
+  background: radial-gradient(
+    circle var(--radius) at var(--cx) var(--cy),
+    transparent                         0%,
+    transparent                         36%,
+    /* Lens rim — barely visible, suggests a physical edge */
+    var(--c-lens-rim)                   39%,
+    rgba(3, 4, 5, 0.38)                44%,
+    rgba(3, 4, 5, 0.80)                60%,
+    rgba(3, 4, 5, 0.96)               100%
+  );
+}
+
+
+/* ============================================================
+   IDLE STATE
+   After 3 seconds without cursor movement, the lens slowly
+   contracts to a smaller radius and dims slightly.
+   Handled by js/lens.js adding/removing .idle class.
+   Communicates that the signal needs active scanning.
+   ============================================================ */
+
+.lens-overlay.idle {
+  /* Slow transition for the idle fade — feels like decay */
+  transition: background 1.8s ease-out;
+
+  background: radial-gradient(
+    circle calc(var(--radius) * 0.55) at var(--cx) var(--cy),
+    transparent                    0%,
+    transparent                    30%,
+    rgba(3, 4, 5, 0.55)           42%,
+    rgba(3, 4, 5, 0.88)           58%,
+    rgba(3, 4, 5, 0.98)          100%
+  );
+}
+
+
+/* ============================================================
+   CURSOR CROSSHAIR ENHANCEMENT
+   When the cursor is over the reading area, replace the
+   default crosshair with a styled version that matches
+   the terminal aesthetic.
+
+   Note: custom cursors via CSS url() are an option but
+   require an image file. Instead we keep the OS crosshair
+   and enhance the feeling through the lens rim alone.
+   ============================================================ */
+
+.reading-area {
+  cursor: crosshair;
+}
+
+/* When cursor leaves reading area, return to default */
+.sidebar,
+.intro-screen,
+button,
+input[type="range"] {
+  cursor: auto;
+}
+
+button {
+  cursor: pointer;
+}
+
+
+/* ============================================================
+   LENS RADIUS SLIDER STYLES
+   Lives in the sidebar. The thumb is the key visual —
+   square, amber, brutalist.
+   ============================================================ */
+
+.lens-slider {
+  -webkit-appearance: none;
+  appearance:         none;
+  width:              100%;
+  height:             2px;
+  background:         var(--c-text-dim);
+  outline:            none;
+  cursor:             pointer;
+  border-radius:      0;
+  display:            block;
+  transition:         background var(--t-fast);
+}
+
+.lens-slider:hover {
+  background: var(--c-amber-dim);
+}
+
+/* Webkit thumb */
+.lens-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance:         none;
+  width:              10px;
+  height:             10px;
+  background:         var(--c-amber);
+  border-radius:      0;     /* square — deliberately brutalist */
+  cursor:             pointer;
+  transition:         background var(--t-fast);
+}
+
+.lens-slider::-webkit-slider-thumb:hover {
+  background: var(--c-text-bright);
+}
+
+/* Firefox thumb */
+.lens-slider::-moz-range-thumb {
+  width:        10px;
+  height:       10px;
+  background:   var(--c-amber);
+  border:       none;
+  border-radius: 0;
+  cursor:        pointer;
+}
+
+.lens-slider::-moz-range-track {
+  background:    var(--c-text-dim);
+  height:        2px;
+  border-radius: 0;
+}
+
+/* Readout value next to slider */
+.lens-readout {
+  font-size:      var(--text-xs);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.08em;
+  white-space:    nowrap;
+  min-width:      3.5ch;
+  text-align:     right;
+  transition:     color var(--t-fast);
+}
+
+.lens-slider:hover ~ .lens-readout,
+.lens-slider:focus ~ .lens-readout {
+  color: var(--c-amber);
+}
+
+/* Slider row — flex container for slider + readout */
+.lens-row {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-3);
+  margin-top:  var(--sp-2);
+}
+
+
+/* ============================================================
+   MOBILE — TOUCH DEVICE FALLBACK
+   On devices with no hover cursor (phones, tablets),
+   the lens overlay is hidden entirely.
+   Instead, paragraphs are revealed by tapping them.
+
+   Each <p> inside .novel-text starts at opacity 0.
+   js/lens.js adds .revealed on tap.
+   ============================================================ */
+
+@media (hover: none) and (pointer: coarse) {
+
+  /* Hide the desktop lens overlay completely */
+  .lens-overlay {
+    display: none;
+  }
+
+  /* All paragraphs start hidden — revealed by scroll */
+  .novel-text p {
+    opacity:    0;
+    transform:  translateY(5px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    cursor:     default;
+  }
+
+  /* Revealed state */
+  .novel-text p.revealed {
+    opacity:      1;
+    transform:    none;
+    border-color: transparent;
+    cursor:       default;
+  }
+
+  /* First two paragraphs auto-reveal on chapter load
+     (handled by js/lens.js — this is the target style) */
+  .novel-text p.auto-revealed {
+    opacity:      1;
+    transform:    none;
+    border-color: transparent;
+    cursor:       default;
+  }
+
+  /* Matters block always visible on mobile */
+  .matters-block {
+    opacity: 1 !important;
+  }
+
+  /* Mobile hint */
+  .mobile-hint {
+    display: flex !important;
+  }
+}
+
+
+/* ============================================================
+   MOBILE HINT ELEMENT
+   Hidden on desktop, shown on touch via media query above.
+   ============================================================ */
+
+.mobile-hint {
+  display:        none;
+  flex-direction: column;
+  align-items:    center;
+  gap:            var(--sp-1);
+  position:       fixed;
+  bottom:         var(--sp-5);
+  left:           50%;
+  transform:      translateX(-50%);
+  z-index:        calc(var(--z-lens) + 1);
+  pointer-events: none;
+  white-space:    nowrap;
+
+  background:   rgba(7, 10, 8, 0.95);
+  border:       1px solid var(--c-border);
+  padding:      var(--sp-3) var(--sp-4);
+
+  /* Auto-fade after 5 seconds — set by js/lens.js */
+  transition: opacity var(--t-slow) ease;
+}
+
+.mobile-hint span {
+  font-size:      var(--text-xs);
+  color:          var(--c-amber);
+  letter-spacing: 0.14em;
+  display:        block;
+}
+
+.mobile-hint-sub {
+  color:          var(--c-text-dim) !important;
+  font-size:      calc(var(--text-xs) * 0.9) !important;
+}
+
+
+/* ============================================================
+   GYROSCOPE MODE INDICATOR
+   Small status badge shown when gyroscope is active on mobile.
+   Added/removed by js/lens.js.
+   ============================================================ */
+
+.gyro-indicator {
+  position:       fixed;
+  top:            var(--sp-4);
+  right:          var(--sp-4);
+  z-index:        calc(var(--z-lens) + 1);
+  pointer-events: none;
+
+  font-size:      var(--text-xs);
+  color:          var(--c-amber-dim);
+  letter-spacing: 0.10em;
+
+  background:   rgba(7, 10, 8, 0.90);
+  border:       1px solid var(--c-border-dim);
+  padding:      var(--sp-2) var(--sp-3);
+
+  opacity:    0;
+  transition: opacity var(--t-slow);
+}
+
+.gyro-indicator.visible {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   KONAMI / FULL REVEAL MODE
+   When the easter egg is triggered, the lens expands to
+   fill the screen. This class is added to <html> by js/lens.js.
+   ============================================================ */
+
+html.full-reveal .lens-overlay {
+  /* Expand to fill — background becomes fully transparent */
+  background: transparent;
+  transition: background 0.8s ease;
+}
+
+html.full-reveal .reading-area {
+  /* Subtle brightness lift when fully revealed */
+  filter:     brightness(1.08);
+  transition: filter 0.8s ease;
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+   Disable the idle contraction animation.
+   The lens still works — it just does not contract.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .lens-overlay,
+  .lens-overlay.active,
+  .lens-overlay.idle {
+    transition: none;
+  }
+
+  /* Keep idle state visible but do not animate it */
+  .lens-overlay.idle {
+    background: radial-gradient(
+      circle var(--radius) at var(--cx) var(--cy),
+      transparent            0%,
+      transparent            38%,
+      rgba(3, 4, 5, 0.42)   48%,
+      rgba(3, 4, 5, 0.82)   62%,
+      rgba(3, 4, 5, 0.96)  100%
+    );
+  }
+}

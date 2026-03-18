@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZERO DRIFT</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/atmosphere.css">
+  <link rel="stylesheet" href="css/lens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/intro.css">
+
+  <!-- ★ NEW CSS FILES — added for new features -->
+  <link rel="stylesheet" href="css/terminal.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/casefile.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       ATMOSPHERE LAYERS
+  ═══════════════════════════════════════ -->
+
+  <div class="atmo-background" aria-hidden="true"></div>
+  <div class="atmo-grid"       aria-hidden="true"></div>
+
+  <div class="atmo-waves" aria-hidden="true">
+    <div class="wave-ring" style="--delay:0s;   --size:200px; --speed:8s"></div>
+    <div class="wave-ring" style="--delay:2.5s; --size:200px; --speed:8s"></div>
+    <div class="wave-ring" style="--delay:5s;   --size:200px; --speed:8s"></div>
+  </div>
+
+  <canvas class="atmo-canvas" id="atmoCanvas" aria-hidden="true"></canvas>
+
+
+  <!-- ═══════════════════════════════════════
+       FEATURE 13 — DEAD COFFEE MAKER
+       Lives bottom-left, always present.
+       Styled entirely in atmosphere.css.
+       js/chapters.js adds .chapter-30 to
+       <body> when ch30 is rendered —
+       that CSS class powers the "unplug".
+  ═══════════════════════════════════════ -->
+  <div class="coffee-maker" aria-hidden="true">
+    <div class="coffee-maker__steam">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="coffee-maker__body">
+      <div class="coffee-maker__light"></div>
+    </div>
+    <div class="coffee-maker__carafe"></div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       SIDEBAR NAVIGATION
+  ═══════════════════════════════════════ -->
+  <nav class="sidebar" id="sidebar" aria-label="Chapter navigation">
+
+    <div class="sidebar-head">
+      <span class="sidebar-label">// DATA_FRAGMENTS</span>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close navigation">[X]</button>
+    </div>
+
+    <div class="sidebar-signal" aria-hidden="true">
+      <span class="signal-dot"></span>
+      <span class="signal-text">CARRIER_WAVE: ACTIVE</span>
+    </div>
+
+    <!-- Chapter list — built dynamically by chapters.js -->
+    <!-- Now renders as act-structured timeline (feature 14) -->
+    <ul class="chapter-list" id="chapterList" role="list"></ul>
+
+    <div class="sidebar-lens">
+      <label class="lens-label" for="lensSlider">// LENS_RADIUS</label>
+      <div class="lens-row">
+        <input
+          type="range"
+          id="lensSlider"
+          min="80"
+          max="420"
+          value="180"
+          class="lens-slider"
+          aria-label="Adjust decryption lens radius"
+        >
+        <span class="lens-readout" id="lensReadout" aria-live="polite">180px</span>
+      </div>
+    </div>
+
+  </nav>
+
+  <button
+    class="sidebar-tab"
+    id="sidebarTab"
+    aria-label="Open chapter navigation"
+    aria-expanded="false"
+    aria-controls="sidebar"
+  >// FRAGMENTS</button>
+
+
+  <!-- ═══════════════════════════════════════
+       MAIN READING AREA
+  ═══════════════════════════════════════ -->
+  <main class="reading-area" id="readingArea">
+
+    <header class="chapter-header" id="chapterHeader">
+      <div class="chapter-meta">
+        <span class="chapter-fragment" id="chapterFragment">// FRAGMENT_001</span>
+
+        <!-- ★ NEW: Signal bar with id (feature 2+3) -->
+        <span id="chapterSignalBar" aria-live="polite">SIGNAL: ██████ 88%</span>
+      </div>
+
+      <!-- ★ NEW: Second meta row — POV label -->
+      <div class="chapter-meta" style="margin-bottom: var(--sp-2);">
+        <span id="povLabel" aria-live="polite">// VOSS_POV</span>
+      </div>
+
+      <h1 class="chapter-title" id="chapterTitle">Cold Case</h1>
+      <div class="chapter-rule" aria-hidden="true"></div>
+    </header>
+
+    <aside class="matters-block" id="mattersBlock" aria-label="Chapter context" hidden>
+      <p id="mattersText"></p>
+    </aside>
+
+    <article class="novel-text" id="novelText" aria-live="polite"></article>
+
+    <footer class="chapter-nav">
+      <button class="nav-btn" id="prevBtn" aria-label="Previous chapter" disabled>
+        &lt; PREV
+      </button>
+      <span class="nav-counter" id="navCounter" aria-live="polite">01 / 30</span>
+      <button class="nav-btn" id="nextBtn" aria-label="Next chapter">
+        NEXT &gt;
+      </button>
+    </footer>
+
+  </main>
+
+
+  <!-- ═══════════════════════════════════════
+       LENS OVERLAY
+  ═══════════════════════════════════════ -->
+  <div class="lens-overlay" id="lensOverlay" aria-hidden="true"></div>
+
+
+  <!-- ═══════════════════════════════════════
+       MOBILE HINT
+  ═══════════════════════════════════════ -->
+  <div class="mobile-hint" id="mobileHint" aria-hidden="true">
+    <span>// SCROLL TO DECRYPT</span>
+    <span class="mobile-hint-sub">signal reveals as you read</span>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       FEATURE 10 — CASE FILE MODE BUTTON
+       Fixed bottom-right.
+       Toggled by chapters.js → initCaseFileToggle()
+  ═══════════════════════════════════════ -->
+  <button id="caseFileBtn" aria-label="Toggle case file reading mode">
+    // CASE_FILE_MODE
+  </button>
+
+
+  <!-- ═══════════════════════════════════════
+       FEATURE 7 — MERIDIAN TERMINAL
+       Hidden panel, revealed by typing
+       the activation command anywhere.
+       Full implementation in js/terminal.js
+       and css/terminal.css.
+  ═══════════════════════════════════════ -->
+  <div class="terminal-panel" id="terminalPanel" aria-hidden="true" hidden>
+    <div class="terminal-head">
+      <span class="terminal-label">// MERIDIAN_TERMINAL — RESTRICTED_ACCESS</span>
+      <button class="terminal-close" id="terminalClose" aria-label="Close terminal">[X]</button>
+    </div>
+    <div class="terminal-output" id="terminalOutput" aria-live="polite"></div>
+    <div class="terminal-input-row">
+      <span class="terminal-prompt">&gt;</span>
+      <input
+        type="text"
+        class="terminal-input"
+        id="terminalInput"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-label="Terminal input"
+        placeholder="ENTER_COMMAND"
+      >
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       FEATURE 9 — ARRAY MAP
+       Hidden panel, opened via map button.
+       Full implementation in js/map.js
+       and css/map.css.
+  ═══════════════════════════════════════ -->
+  <div class="map-panel" id="mapPanel" aria-hidden="true" hidden>
+    <div class="map-head">
+      <span class="map-title">// VELTHAN_COASTAL_ARRAY — SIGNAL_MAP</span>
+      <button class="map-close" id="mapClose" aria-label="Close map">[X]</button>
+    </div>
+    <!-- SVG map drawn entirely in js/map.js -->
+    <div class="map-canvas" id="mapCanvas" aria-label="Velthan coastal map"></div>
+    <div class="map-info" id="mapInfo">
+      <span class="map-info-label">// SELECT_LOCATION</span>
+      <p class="map-info-text" id="mapInfoText">Move cursor over a location to decrypt its file.</p>
+    </div>
+  </div>
+
+  <!-- Map open button — fixed position -->
+  <button class="map-btn" id="mapBtn" aria-label="Open Velthan array map">
+    // ARRAY_MAP
+  </button>
+
+
+  <!-- ═══════════════════════════════════════
+       INTRO SCREEN
+  ═══════════════════════════════════════ -->
+  <div
+    class="intro-screen"
+    id="introScreen"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Zero Drift — initialization"
+  >
+    <div class="intro-inner">
+      <div class="intro-classify">// CLASSIFIED_DOCUMENT</div>
+      <h1 class="intro-title">
+        <span class="intro-title-zero">ZERO</span>
+        <span class="intro-title-drift">DRIFT</span>
+      </h1>
+      <div class="intro-edition">Ghost Encoding Lens — v1.0</div>
+      <div class="intro-boot" id="introBoot" aria-live="polite"></div>
+      <button class="intro-enter" id="introEnter" aria-label="Initialize decryption lens">
+        INITIALIZE_DECRYPTION_LENS ›
+      </button>
+      <div class="intro-footer" aria-hidden="true">
+        // MOVE CURSOR TO DECRYPT SIGNAL<br>
+        // SOURCE: VELTHAN_COASTAL_ARRAY<br>
+        // STATUS: FINAL_PROPAGATION
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════
+       CHAPTER DATA
+  ═══════════════════════════════════════ -->
+  <script>
+    var CHAPTERS = [];
+  </script>
+
+  <script src="data/ch01.js"></script>
+  <script src="data/ch02.js"></script>
+  <script src="data/ch03.js"></script>
+  <script src="data/ch04.js"></script>
+  <script src="data/ch05.js"></script>
+  <script src="data/ch06.js"></script>
+  <script src="data/ch07.js"></script>
+  <script src="data/ch08.js"></script>
+  <script src="data/ch09.js"></script>
+  <script src="data/ch10.js"></script>
+  <script src="data/ch11.js"></script>
+  <script src="data/ch12.js"></script>
+  <script src="data/ch13.js"></script>
+  <script src="data/ch14.js"></script>
+  <script src="data/ch15.js"></script>
+  <script src="data/ch16.js"></script>
+  <script src="data/ch17.js"></script>
+  <script src="data/ch18.js"></script>
+  <script src="data/ch19.js"></script>
+  <script src="data/ch20.js"></script>
+  <script src="data/ch21.js"></script>
+  <script src="data/ch22.js"></script>
+  <script src="data/ch23.js"></script>
+  <script src="data/ch24.js"></script>
+  <script src="data/ch25.js"></script>
+  <script src="data/ch26.js"></script>
+  <script src="data/ch27.js"></script>
+  <script src="data/ch28.js"></script>
+  <script src="data/ch29.js"></script>
+  <script src="data/ch30.js"></script>
+
+
+  <!-- ═══════════════════════════════════════
+       JS ENGINE
+       Order matters.
+  ═══════════════════════════════════════ -->
+  <script src="js/effects.js"></script>
+  <script src="js/lens.js"></script>
+  <script src="js/chapters.js"></script>
+  <script src="js/signal.js"></script>
+  <script src="js/terminal.js"></script>
+  <script src="js/map.js"></script>
+  <script src="js/ghost.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

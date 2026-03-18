@@ -1,0 +1,292 @@
+/* ============================================================
+   css/base.css
+   ZERO DRIFT — Ghost Encoding Lens
+
+   Contents:
+   1. CSS custom properties (all design tokens live here)
+   2. Reset
+   3. Base typography
+   4. Scrollbar
+   5. Selection
+   6. Focus ring
+   ============================================================ */
+
+
+/* ============================================================
+   1. CSS CUSTOM PROPERTIES
+   Every color, size, timing value used across all CSS files
+   is defined here. Change something once, it updates everywhere.
+   ============================================================ */
+
+:root {
+
+  /* ── Colors ─────────────────────────────────────────────── */
+
+  /* Backgrounds — darkest to least dark */
+  --c-void:      #030405;   /* absolute background */
+  --c-deep:      #070a08;   /* panels, overlays */
+  --c-panel:     #0c100d;   /* sidebar, intro */
+  --c-signal:    #121a13;   /* hover states */
+
+  /* Text — dimmest to brightest */
+  --c-text-dim:    #2d4030;  /* labels, meta, disabled */
+  --c-text-cold:   #4a6652;  /* body text (outside lens) */
+  --c-text-reveal: #7aaa84;  /* body text (inside lens / default) */
+  --c-text-bright: #aed4b4;  /* headings, first paragraphs */
+  --c-text-white:  #c8e0cc;  /* maximum brightness — use sparingly */
+
+  /* Accent — amber/signal orange for UI chrome */
+  --c-amber:     #b87840;
+  --c-amber-dim: #6b4820;
+  --c-amber-low: #3a2810;
+
+  /* Borders */
+  --c-border:     rgba(45, 74, 51, 0.30);
+  --c-border-dim: rgba(45, 74, 51, 0.15);
+  --c-border-hot: rgba(184, 120, 64, 0.45);
+
+  /* Lens specific */
+  --c-lens-rim:   rgba(58, 160, 80, 0.15);
+
+  /* ── Typography ─────────────────────────────────────────── */
+
+  --font-mono: 'JetBrains Mono', 'Courier New', 'Lucida Console', monospace;
+
+  /* Scale */
+  --text-xs:   0.55rem;   /* tiny labels */
+  --text-sm:   0.65rem;   /* meta, signal readouts */
+  --text-base: 0.92rem;   /* body text */
+  --text-md:   1.1rem;    /* subheadings */
+  --text-lg:   1.5rem;    /* chapter title small screens */
+  --text-xl:   2.2rem;    /* chapter title large screens */
+  --text-hero: clamp(2.8rem, 10vw, 5.5rem);  /* intro title */
+
+  /* Leading */
+  --lead-tight:  1.2;
+  --lead-normal: 1.7;
+  --lead-loose:  2.0;
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+
+  --sp-1:  0.25rem;
+  --sp-2:  0.5rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1rem;
+  --sp-5:  1.5rem;
+  --sp-6:  2rem;
+  --sp-8:  3rem;
+  --sp-10: 4rem;
+
+  /* ── Layout ─────────────────────────────────────────────── */
+
+  --sidebar-w:    272px;
+  --content-max:  660px;   /* max width of the novel text column */
+  --reading-pad:  clamp(1.2rem, 5vw, 2.5rem);
+
+  /* ── The Lens ────────────────────────────────────────────── */
+
+  /* Updated by js/lens.js on every mousemove */
+  --cx:     50%;     /* cursor x position */
+  --cy:     50%;     /* cursor y position */
+  --radius: 180px;   /* lens radius — also updated by slider */
+
+  /* ── Timing ──────────────────────────────────────────────── */
+
+  --t-fast:   0.12s;
+  --t-normal: 0.24s;
+  --t-slow:   0.45s;
+
+  /* ── Z-index stack ──────────────────────────────────────── */
+  /* Read from bottom to top. Do not reuse these values.      */
+
+  --z-bg:        0;    /* atmosphere background layers */
+  --z-content:   10;   /* reading area, main text */
+  --z-lens:      100;  /* lens overlay — masks the content */
+  --z-sidebar:   200;  /* sidebar — above the lens */
+  --z-intro:     300;  /* intro screen — above everything */
+}
+
+
+/* ============================================================
+   2. RESET
+   Minimal. Only what is actually needed.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+/* Enforce the HTML [hidden] attribute.
+   Without this, component-level display:flex / display:grid
+   rules override the attribute's native display:none,
+   causing panels to stay visible even when hidden is set. */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  /* Base font size — rem values throughout derive from this */
+  font-size: 15px;
+  /* Prevent horizontal scroll from atmosphere elements */
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--c-void);
+  color:            var(--c-text-reveal);
+  font-family:      var(--font-mono);
+  font-size:        var(--text-base);
+  font-weight:      400;
+  line-height:      var(--lead-loose);
+  min-height:       100vh;
+  overflow-x:       hidden;
+
+  /* Crosshair reinforces the scanning / decryption metaphor */
+  cursor: crosshair;
+
+  /* GPU hint — the lens overlay animates every frame */
+  will-change: auto;
+}
+
+/* Remove list styling — we apply our own */
+ul, ol {
+  list-style: none;
+}
+
+/* Images never overflow their container */
+img {
+  display:   block;
+  max-width: 100%;
+}
+
+/* Buttons inherit font — never use browser default font */
+button,
+input {
+  font-family: inherit;
+  font-size:   inherit;
+}
+
+/* Remove default button appearance */
+button {
+  background:  none;
+  border:      none;
+  cursor:      pointer;
+  color:       inherit;
+  line-height: 1;
+}
+
+/* Remove default input appearance */
+input {
+  background: none;
+  border:     none;
+  outline:    none;
+  color:      inherit;
+}
+
+/* Paragraph spacing — used by the novel text parser */
+p {
+  margin-bottom: var(--sp-5);
+  max-width:     62ch;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+em {
+  font-style: italic;
+  color:      var(--c-text-cold);
+}
+
+strong {
+  font-weight: 700;
+  color:       var(--c-text-bright);
+}
+
+
+/* ============================================================
+   3. BASE TYPOGRAPHY UTILITIES
+   Small reusable classes used throughout all other CSS files.
+   ============================================================ */
+
+/* Tiny uppercase label with wide tracking */
+.label {
+  font-size:      var(--text-xs);
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--c-amber);
+  line-height:    1;
+}
+
+/* Dimmer version of label — for secondary metadata */
+.label-dim {
+  font-size:      var(--text-xs);
+  font-weight:    400;
+  letter-spacing: 0.12em;
+  color:          var(--c-text-dim);
+  line-height:    1;
+}
+
+/* Signal readout — monospace data display style */
+.readout {
+  font-size:      var(--text-sm);
+  letter-spacing: 0.06em;
+  color:          var(--c-text-dim);
+  white-space:    nowrap;
+}
+
+
+/* ============================================================
+   4. SCROLLBAR
+   Minimal — matches the dark palette.
+   ============================================================ */
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-text-dim);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-text-dim) transparent;
+}
+
+
+/* ============================================================
+   5. TEXT SELECTION
+   ============================================================ */
+
+::selection {
+  background: rgba(58, 160, 80, 0.25);
+  color:      var(--c-text-bright);
+}
+
+
+/* ============================================================
+   6. FOCUS RING
+   Keyboard accessibility — visible but matches the palette.
+   ============================================================ */
+
+:focus-visible {
+  outline:        1px solid var(--c-amber-dim);
+  outline-offset: 3px;
+}
+
+/* Remove focus ring on mouse click (only show for keyboard) */
+:focus:not(:focus-visible) {
+  outline: none;
+}

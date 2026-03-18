@@ -1,0 +1,261 @@
+/* ============================================================
+   css/map.css
+   ZERO DRIFT — Velthan Coastal Array Map (feature 9)
+============================================================ */
+
+/* ── Map open button ── */
+.map-btn {
+  position:       fixed;
+  bottom:         var(--sp-5);
+  left:           calc(var(--sp-5) + 48px);
+  z-index:        calc(var(--z-lens) + 1);
+  font-size:      var(--text-xs);
+  letter-spacing: 0.12em;
+  color:          var(--c-text-dim);
+  border:         1px solid var(--c-border-dim);
+  padding:        var(--sp-2) var(--sp-3);
+  background:     rgba(7, 10, 8, 0.90);
+  transition:     color var(--t-fast), border-color var(--t-fast);
+}
+
+.map-btn:hover {
+  color:        var(--c-amber);
+  border-color: var(--c-amber-dim);
+}
+
+/* ── Map panel ── */
+.map-panel {
+  position:   fixed;
+  top:        50%;
+  left:       50%;
+  transform:  translate(-50%, -50%);
+  z-index:    calc(var(--z-sidebar) + 5);
+
+  width:      min(780px, 94vw);
+  max-height: 85vh;
+
+  display:        flex;
+  flex-direction: column;
+
+  background:  rgba(4, 7, 5, 0.98);
+  border:      1px solid rgba(45, 74, 51, 0.40);
+  box-shadow:
+    0 0 0 1px rgba(45, 74, 51, 0.10),
+    0 30px 80px rgba(0, 0, 0, 0.90);
+
+  backdrop-filter:         blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  animation: mapFadeIn 0.25s ease forwards;
+}
+
+@keyframes mapFadeIn {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ── Map head ── */
+.map-head {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-2) var(--sp-4);
+  border-bottom:   1px solid rgba(45, 74, 51, 0.22);
+  flex-shrink:     0;
+}
+
+.map-title {
+  font-size:      var(--text-sm);
+  font-weight:    700;
+  color:          var(--c-amber);
+  letter-spacing: 0.14em;
+}
+
+.map-close {
+  font-size:   0.65rem;
+  color:       var(--c-text-dim);
+  border:      1px solid var(--c-border-dim);
+  padding:     2px 6px;
+  line-height: 1.4;
+  transition:  color var(--t-fast), border-color var(--t-fast);
+}
+
+.map-close:hover {
+  color:        var(--c-amber);
+  border-color: var(--c-amber-dim);
+}
+
+/* ── SVG canvas ── */
+.map-canvas {
+  flex:     1;
+  overflow: hidden;
+  position: relative;
+  min-height: 260px;
+}
+
+.map-svg {
+  width:   100%;
+  height:  100%;
+  display: block;
+}
+
+/* ── Wave rings on map ── */
+.map-wave-ring {
+  animation: mapWaveExpand 4s ease-out infinite;
+  transform-origin: 8px 18px;
+}
+
+@keyframes mapWaveExpand {
+  0%   { opacity: 0.5; transform: scale(0.8); }
+  60%  { opacity: 0.1; }
+  100% { opacity: 0;   transform: scale(1.4); }
+}
+
+/* ── Location markers ── */
+.map-dot {
+  fill:       rgba(45, 120, 60, 0.70);
+  transition: fill 0.15s ease;
+}
+
+.map-cross {
+  stroke:       rgba(45, 100, 55, 0.35);
+  stroke-width: 0.2;
+}
+
+.map-pulse {
+  stroke:       rgba(45, 120, 60, 0.15);
+  stroke-width: 0.3;
+}
+
+.map-label {
+  fill:           rgba(45, 90, 52, 0.55);
+  font-size:      2px;
+  letter-spacing: 0.2px;
+  transition:     fill 0.15s ease;
+}
+
+.map-label--redacted {
+  fill: rgba(140, 80, 40, 0.50);
+}
+
+.map-label--classified {
+  fill: rgba(100, 40, 40, 0.50);
+}
+
+/* ── Location type colors ── */
+.map-location--primary   .map-dot { fill: rgba(58, 160, 80, 0.85); }
+.map-location--secondary .map-dot { fill: rgba(45, 120, 60, 0.65); }
+.map-location--tertiary  .map-dot { fill: rgba(35,  90, 48, 0.55); }
+.map-location--warning   .map-dot { fill: rgba(140, 80, 40, 0.65); }
+.map-location--signal    .map-dot { fill: rgba(100, 160, 200, 0.70); }
+
+/* ── Active state only (no hover) — tap/click to select ── */
+.map-location--active .map-dot {
+  fill: rgba(130, 220, 150, 0.90);
+}
+
+.map-location--active .map-label {
+  fill: rgba(130, 200, 140, 0.90);
+}
+
+.map-location--active .map-pulse {
+  stroke:    rgba(58, 160, 80, 0.35);
+  animation: mapPulseRing 1.2s ease-out infinite;
+}
+
+@keyframes mapPulseRing {
+  0%   { r: 2;   opacity: 0.6; }
+  100% { r: 4.5; opacity: 0;   }
+}
+
+.map-location--active .map-cross {
+  stroke: rgba(58, 160, 80, 0.55);
+}
+
+/* ── Info panel ── */
+.map-info {
+  border-top: 1px solid rgba(45, 74, 51, 0.20);
+  padding:    var(--sp-3) var(--sp-4);
+  max-height: 180px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-text-dim) transparent;
+}
+
+.map-info-label {
+  display:        block;
+  font-size:      var(--text-xs);
+  color:          var(--c-amber-dim);
+  letter-spacing: 0.14em;
+  margin-bottom:  var(--sp-2);
+}
+
+.map-info-text {
+  font-size:   var(--text-sm);
+  color:       var(--c-text-cold);
+  line-height: 1.75;
+  margin:      0;
+  max-width:   none;
+}
+
+.map-info-line {
+  display:        inline;
+  letter-spacing: 0.03em;
+}
+
+.map-info-comment  { color: var(--c-amber-dim); }
+.map-info-redacted { color: rgba(140, 50, 50, 0.70); }
+.map-info-rule     { color: rgba(45, 74, 51, 0.30); }
+
+/* ── Backdrop — blocks background interaction when map is open ── */
+.map-backdrop {
+  position:       fixed;
+  inset:          0;
+  z-index:        calc(var(--z-sidebar) + 4);
+  background:     rgba(2, 4, 3, 0.60);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  pointer-events: auto;
+  cursor:         default;
+  animation:      backdropFadeIn 0.20s ease forwards;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .map-panel {
+    top:       auto;
+    bottom:    0;
+    left:      0;
+    right:     0;
+    transform: none;
+    width:     100%;
+    max-height: 80vh;
+    border-left:   none;
+    border-right:  none;
+    border-bottom: none;
+  }
+
+  @keyframes mapFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .map-btn {
+    bottom: var(--sp-5);
+    left:   var(--sp-4);
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .map-panel       { animation: none; }
+  .map-wave-ring   { animation: none; opacity: 0.08; }
+  .map-location:hover .map-pulse,
+  .map-location--active .map-pulse { animation: none; }
+}

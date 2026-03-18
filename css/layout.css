@@ -1,0 +1,785 @@
+/* ============================================================
+   css/layout.css
+   ZERO DRIFT — Ghost Encoding Lens
+   Rewritten: POV voice modes, timeline sidebar,
+   breadcrumb trail, case file mode
+============================================================ */
+
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+.sidebar {
+  position:   fixed;
+  top:        0;
+  left:       calc(var(--sidebar-w) * -1);
+  width:      var(--sidebar-w);
+  height:     100vh;
+  z-index:    var(--z-sidebar);
+  display:        flex;
+  flex-direction: column;
+  overflow:       hidden;
+  background:  rgba(7, 10, 8, 0.98);
+  border-right: 1px solid var(--c-border);
+  transition: left var(--t-normal) cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter:         blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.sidebar.open {
+  left: 0;
+  box-shadow: 8px 0 48px rgba(0, 0, 0, 0.80);
+}
+
+.sidebar-head {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding:         var(--sp-4) var(--sp-4) var(--sp-3);
+  border-bottom:   1px solid var(--c-border-dim);
+  flex-shrink:     0;
+}
+
+.sidebar-label {
+  font-size:      var(--text-xs);
+  font-weight:    700;
+  color:          var(--c-amber);
+  letter-spacing: 0.18em;
+}
+
+.sidebar-close {
+  font-size:   0.7rem;
+  color:       var(--c-text-dim);
+  padding:     var(--sp-2);
+  border:      1px solid var(--c-border-dim);
+  line-height: 1;
+  transition:  color var(--t-fast), border-color var(--t-fast);
+}
+
+.sidebar-close:hover {
+  color:        var(--c-amber);
+  border-color: var(--c-amber-dim);
+}
+
+.sidebar-signal {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--sp-2);
+  padding:       var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--c-border-dim);
+  flex-shrink:   0;
+}
+
+.signal-text {
+  font-size:      var(--text-xs);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.06em;
+}
+
+.sidebar-lens {
+  padding:     var(--sp-4);
+  border-top:  1px solid var(--c-border-dim);
+  flex-shrink: 0;
+}
+
+.lens-label {
+  display:        block;
+  font-size:      var(--text-xs);
+  color:          var(--c-amber-dim);
+  letter-spacing: 0.14em;
+}
+
+
+/* ============================================================
+   SIDEBAR TAB
+============================================================ */
+
+.sidebar-tab {
+  position:  fixed;
+  top:       50%;
+  left:      0;
+  transform: translateY(-50%);
+  z-index:   calc(var(--z-sidebar) - 1);
+  writing-mode:     vertical-rl;
+  text-orientation: mixed;
+  font-size:      var(--text-xs);
+  letter-spacing: 0.12em;
+  color:          var(--c-amber-dim);
+  background:   rgba(7, 10, 8, 0.95);
+  border:       1px solid var(--c-border-dim);
+  border-left:  none;
+  padding:      var(--sp-4) var(--sp-2);
+  transition:
+    left         var(--t-normal) cubic-bezier(0.4, 0, 0.2, 1),
+    color        var(--t-fast),
+    border-color var(--t-fast);
+}
+
+.sidebar-tab:hover {
+  color:        var(--c-amber);
+  border-color: var(--c-amber-dim);
+}
+
+.sidebar.open ~ .sidebar-tab {
+  left: var(--sidebar-w);
+}
+
+
+/* ============================================================
+   TIMELINE CHAPTER LIST (feature 14)
+============================================================ */
+
+.chapter-list {
+  flex:       1;
+  overflow-y: auto;
+  padding:    var(--sp-2) 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-text-dim) transparent;
+}
+
+.chapter-list::-webkit-scrollbar       { width: 2px; }
+.chapter-list::-webkit-scrollbar-track { background: transparent; }
+.chapter-list::-webkit-scrollbar-thumb { background: var(--c-text-dim); }
+
+/* ── Act headers ── */
+.act-header {
+  padding:       var(--sp-3) var(--sp-4) var(--sp-1);
+  margin-top:    var(--sp-2);
+  border-top:    1px solid var(--c-border-dim);
+  pointer-events: none;
+  user-select:   none;
+}
+
+.act-header:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
+.act-label {
+  display:        block;
+  font-size:      var(--text-xs);
+  font-weight:    700;
+  color:          var(--c-amber);
+  letter-spacing: 0.22em;
+  line-height:    1;
+  margin-bottom:  var(--sp-1);
+}
+
+.act-sub {
+  display:        block;
+  font-size:      calc(var(--text-xs) * 0.85);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.10em;
+}
+
+/* ── Chapter items ── */
+.chapter-item {
+  display:      block;
+  padding:      var(--sp-2) var(--sp-4) var(--sp-2) var(--sp-3);
+  border-left:  2px solid transparent;
+  cursor:       pointer;
+  user-select:  none;
+  transition:   background var(--t-fast), border-color var(--t-fast);
+}
+
+.chapter-item:hover {
+  background:   rgba(45, 74, 51, 0.12);
+  border-color: rgba(45, 74, 51, 0.40);
+}
+
+.chapter-item.active {
+  background:   rgba(45, 74, 51, 0.16);
+  border-color: var(--c-amber);
+}
+
+/* ── Breadcrumb trail (feature 15) ── */
+.chapter-item.visited:not(.active) {
+  border-color: rgba(45, 74, 51, 0.22);
+}
+
+.chapter-item.visited:not(.active) .chapter-item-title {
+  color: var(--c-text-cold);
+}
+
+/* Faint left trace line connecting visited items */
+.chapter-item.visited::before {
+  content:    '';
+  position:   absolute;
+  left:       -1px;
+  top:        0;
+  bottom:     0;
+  width:      1px;
+  background: rgba(45, 74, 51, 0.15);
+}
+
+/* ── Item row (POV dot + fragment + signal spike) ── */
+.chapter-item-row {
+  display:     flex;
+  align-items: center;
+  gap:         var(--sp-2);
+  margin-bottom: var(--sp-1);
+}
+
+.chapter-item-num {
+  font-size:      var(--text-xs);
+  color:          var(--c-amber-dim);
+  letter-spacing: 0.08em;
+  line-height:    1;
+  flex:           1;
+}
+
+/* ── Signal spike (feature 2 sidebar indicator) ── */
+.chapter-spike {
+  display:       inline-block;
+  width:         2px;
+  background:    var(--c-text-dim);
+  flex-shrink:   0;
+  align-self:    flex-end;
+  transition:    background var(--t-fast);
+}
+
+.chapter-item.active   .chapter-spike { background: var(--c-amber); }
+.chapter-item:hover    .chapter-spike { background: var(--c-text-cold); }
+.chapter-item.visited  .chapter-spike { background: rgba(45, 74, 51, 0.4); }
+
+/* ── Chapter title ── */
+.chapter-item-title {
+  display:     block;
+  font-size:   var(--text-sm);
+  color:       var(--c-text-dim);
+  line-height: var(--lead-tight);
+  transition:  color var(--t-fast);
+}
+
+.chapter-item.active .chapter-item-title,
+.chapter-item:hover  .chapter-item-title {
+  color: var(--c-text-bright);
+}
+
+/* ── Key event tag ── */
+.chapter-event {
+  display:        inline-block;
+  margin-top:     var(--sp-1);
+  font-size:      calc(var(--text-xs) * 0.85);
+  color:          rgba(184, 120, 64, 0.55);
+  letter-spacing: 0.08em;
+}
+
+/* ── POV dots (feature 5) ── */
+.pov-dot {
+  display:       inline-block;
+  width:         5px;
+  height:        5px;
+  border-radius: 50%;
+  flex-shrink:   0;
+}
+
+.pov-dot--calder   { background: rgba(160, 200, 220, 0.7); }
+.pov-dot--nara     { background: rgba(58,  160,  80, 0.7); }
+.pov-dot--sable    { background: rgba(184, 120,  64, 0.7); }
+.pov-dot--juni     { background: rgba(160, 120, 200, 0.7); }
+.pov-dot--ensemble { background: rgba(100, 140, 110, 0.5); }
+
+
+/* ============================================================
+   READING AREA
+============================================================ */
+
+.reading-area {
+  position:   relative;
+  z-index:    var(--z-content);
+  min-height: 100vh;
+  max-width:  var(--content-max);
+  margin:     0 auto;
+  padding:
+    var(--sp-10)
+    var(--reading-pad)
+    calc(var(--sp-10) * 2)
+    var(--reading-pad);
+}
+
+
+/* ============================================================
+   CHAPTER HEADER
+============================================================ */
+
+.chapter-header {
+  margin-bottom: var(--sp-6);
+}
+
+.chapter-meta {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  flex-wrap:       wrap;
+  gap:             var(--sp-2);
+  margin-bottom:   var(--sp-3);
+}
+
+.chapter-fragment {
+  font-size:      var(--text-xs);
+  font-weight:    700;
+  color:          var(--c-amber);
+  letter-spacing: 0.18em;
+}
+
+/* Signal bar — updated dynamically by chapters.js */
+#chapterSignalBar {
+  font-size:      var(--text-xs);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.06em;
+  white-space:    nowrap;
+  transition:     color var(--t-normal);
+}
+
+/* POV label */
+#povLabel {
+  font-size:      var(--text-xs);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.10em;
+  opacity:        0.7;
+}
+
+.chapter-title {
+  font-size:      clamp(var(--text-lg), 4vw, var(--text-xl));
+  font-weight:    700;
+  color:          var(--c-text-bright);
+  letter-spacing: 0.08em;
+  line-height:    var(--lead-tight);
+  text-transform: uppercase;
+  margin-bottom:  var(--sp-4);
+  transition:     color var(--t-slow);
+}
+
+.chapter-rule {
+  height:     1px;
+  background: linear-gradient(
+    90deg,
+    var(--c-border) 0%,
+    var(--c-border-dim) 60%,
+    transparent 100%
+  );
+}
+
+
+/* ============================================================
+   MATTERS BLOCK
+============================================================ */
+
+.matters-block {
+  border-left:   2px solid var(--c-amber-low);
+  padding:       var(--sp-3) var(--sp-4);
+  margin-bottom: var(--sp-6);
+  background:    rgba(58, 40, 16, 0.06);
+}
+
+.matters-block:not([hidden]) { display: block; }
+
+.matters-block::before {
+  content:        '// WHY_THIS_MATTERS';
+  display:        block;
+  font-size:      var(--text-xs);
+  color:          var(--c-amber-low);
+  letter-spacing: 0.14em;
+  margin-bottom:  var(--sp-2);
+}
+
+.matters-block p {
+  font-size:   var(--text-sm);
+  color:       rgba(107, 72, 32, 0.75);
+  line-height: var(--lead-normal);
+  font-style:  italic;
+  margin:      0;
+  max-width:   none;
+}
+
+
+/* ============================================================
+   NOVEL TEXT — BASE
+============================================================ */
+
+.novel-text {
+  animation: chapterFadeIn 0.5s ease forwards;
+}
+
+@keyframes chapterFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.novel-text p {
+  font-size:   var(--text-base);
+  line-height: var(--lead-loose);
+  color:       var(--c-text-reveal);
+  max-width:   62ch;
+}
+
+.novel-text p:first-of-type {
+  color:       var(--c-text-bright);
+  font-weight: 300;
+}
+
+.novel-text em     { font-style: italic; color: var(--c-text-cold); }
+.novel-text strong { font-weight: 700;   color: var(--c-text-bright); }
+
+.novel-text .break {
+  display:  block;
+  margin:   var(--sp-6) 0;
+  position: relative;
+}
+
+.novel-text .break::before {
+  content:        '─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─';
+  display:        block;
+  font-size:      var(--text-xs);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.25em;
+  opacity:        0.45;
+  white-space:    nowrap;
+  overflow:       hidden;
+  max-width:      62ch;
+}
+
+
+/* ============================================================
+   POV VOICE MODES (feature 6)
+   Each POV subtly shifts the reading aesthetic.
+============================================================ */
+
+/* ── Calder: clinical, tight, cold ── */
+body.pov-calder .novel-text p {
+  line-height: 1.75;
+  letter-spacing: 0.01em;
+  color: #7aaa84;
+}
+
+body.pov-calder .chapter-title {
+  color: #b0ccd8;
+  letter-spacing: 0.12em;
+}
+
+body.pov-calder .chapter-rule {
+  background: linear-gradient(90deg, rgba(160, 200, 220, 0.25), transparent);
+}
+
+/* ── Nara: slightly brighter, more open ── */
+body.pov-nara .novel-text p {
+  line-height: 2.0;
+  color: #88bb90;
+}
+
+body.pov-nara .novel-text p:first-of-type {
+  color: #b8d8b8;
+}
+
+body.pov-nara .chapter-title {
+  color: #9ad4a0;
+}
+
+body.pov-nara .chapter-rule {
+  background: linear-gradient(90deg, rgba(58, 160, 80, 0.30), transparent);
+}
+
+/* ── Sable: cooler, amber tint, compressed ── */
+body.pov-sable .novel-text p {
+  line-height: 1.82;
+  color: #7a9a80;
+  filter: sepia(0.08);
+}
+
+body.pov-sable .chapter-title {
+  color: #c8a870;
+}
+
+body.pov-sable .chapter-rule {
+  background: linear-gradient(90deg, rgba(184, 120, 64, 0.28), transparent);
+}
+
+body.pov-sable .novel-text .break::before {
+  color: rgba(184, 120, 64, 0.35);
+}
+
+/* ── Juni: slightly unstable, violet tint ── */
+body.pov-juni .novel-text p {
+  line-height: 1.95;
+  color: #8a8aaa;
+}
+
+body.pov-juni .chapter-title {
+  color: #b0a0cc;
+  letter-spacing: 0.07em;
+}
+
+body.pov-juni .chapter-rule {
+  background: linear-gradient(90deg, rgba(160, 120, 200, 0.25), transparent);
+}
+
+/* Juni glitch spans (injected by chapters.js) */
+.juni-glitch {
+  position:   relative;
+  display:    inline-block;
+  animation:  juniGlitch 4s ease-in-out infinite;
+}
+
+@keyframes juniGlitch {
+  0%,  88%, 100% {
+    opacity: 1;
+    transform: none;
+    color: inherit;
+  }
+  89% {
+    opacity:   0.4;
+    transform: translateX(1px);
+    color:     rgba(160, 120, 200, 0.8);
+  }
+  90% {
+    opacity:   1;
+    transform: none;
+  }
+  93% {
+    opacity:   0.6;
+    transform: translateX(-1px);
+  }
+  94% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Ensemble: neutral, slightly muted ── */
+body.pov-ensemble .novel-text p {
+  line-height: 1.9;
+  color: #6a9a72;
+}
+
+
+/* ============================================================
+   CASE FILE MODE (feature 10)
+   Toggle adds .case-file-mode to <body>.
+============================================================ */
+
+body.case-file-mode .reading-area {
+  background:    rgba(14, 12, 8, 0.92);
+  border:        1px solid rgba(100, 90, 60, 0.25);
+  border-radius: 1px;
+  padding:       var(--sp-8) var(--sp-8) calc(var(--sp-10) * 2);
+
+  /* Slight rotation — physical document feel */
+  transform:  rotate(-0.35deg);
+  box-shadow:
+    0 0 0 1px rgba(80, 70, 40, 0.15),
+    4px 6px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 80px rgba(0, 0, 0, 0.3);
+
+  transition: transform var(--t-slow) ease, box-shadow var(--t-slow) ease;
+}
+
+/* Paper noise texture via pseudo-element */
+body.case-file-mode .reading-area::after {
+  content:        '';
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  z-index:        1;
+  opacity:        0.025;
+  background-image:
+    repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(120, 110, 80, 0.8) 2px,
+      rgba(120, 110, 80, 0.8) 3px
+    );
+}
+
+/* Coffee stain — top right corner */
+body.case-file-mode .reading-area::before {
+  content:        '';
+  position:       absolute;
+  top:            var(--sp-6);
+  right:          var(--sp-5);
+  width:          52px;
+  height:         52px;
+  border-radius:  50%;
+  border:         6px solid rgba(80, 55, 20, 0.12);
+  box-shadow:
+    0 0 0 2px rgba(80, 55, 20, 0.06),
+    inset 0 0 8px rgba(60, 40, 10, 0.08);
+  pointer-events: none;
+  z-index:        2;
+}
+
+/* Text shifts to aged paper tone */
+body.case-file-mode .novel-text p {
+  color:          rgba(160, 148, 108, 0.85) !important;
+  line-height:    1.85;
+  letter-spacing: 0.005em;
+}
+
+body.case-file-mode .novel-text p:first-of-type {
+  color: rgba(185, 172, 128, 0.90) !important;
+}
+
+body.case-file-mode .novel-text em {
+  color: rgba(140, 128, 90, 0.8) !important;
+}
+
+body.case-file-mode .chapter-title {
+  color:          rgba(185, 165, 100, 0.9);
+  letter-spacing: 0.14em;
+}
+
+body.case-file-mode .chapter-fragment {
+  color: rgba(150, 120, 60, 0.8);
+}
+
+/* Stamped "CLASSIFIED" watermark */
+body.case-file-mode .novel-text::after {
+  content:        'CLASSIFIED';
+  position:       fixed;
+  top:            50%;
+  left:           50%;
+  transform:      translate(-50%, -50%) rotate(-28deg);
+  font-size:      5rem;
+  font-weight:    700;
+  letter-spacing: 0.3em;
+  color:          rgba(140, 40, 40, 0.04);
+  pointer-events: none;
+  z-index:        0;
+  user-select:    none;
+  white-space:    nowrap;
+}
+
+/* Case file mode button */
+#caseFileBtn {
+  position:       fixed;
+  bottom:         var(--sp-5);
+  right:          var(--sp-5);
+  z-index:        calc(var(--z-lens) + 1);
+  font-size:      var(--text-xs);
+  letter-spacing: 0.12em;
+  color:          var(--c-text-dim);
+  border:         1px solid var(--c-border-dim);
+  padding:        var(--sp-2) var(--sp-3);
+  background:     rgba(7, 10, 8, 0.90);
+  transition:     color var(--t-fast), border-color var(--t-fast);
+}
+
+#caseFileBtn:hover,
+#caseFileBtn.active {
+  color:        var(--c-amber);
+  border-color: var(--c-amber-dim);
+}
+
+
+/* ============================================================
+   CHAPTER NAV FOOTER
+============================================================ */
+
+.chapter-nav {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--sp-4);
+  margin-top:      var(--sp-10);
+  padding-top:     var(--sp-5);
+  border-top:      1px solid var(--c-border-dim);
+}
+
+.nav-btn {
+  font-size:      var(--text-sm);
+  letter-spacing: 0.12em;
+  color:          var(--c-text-dim);
+  border:         1px solid var(--c-border-dim);
+  padding:        var(--sp-2) var(--sp-4);
+  white-space:    nowrap;
+  transition:
+    color        var(--t-fast),
+    border-color var(--t-fast),
+    background   var(--t-fast);
+}
+
+.nav-btn:hover:not(:disabled) {
+  color:        var(--c-amber);
+  border-color: var(--c-amber-dim);
+  background:   rgba(58, 40, 16, 0.08);
+}
+
+.nav-btn:disabled {
+  opacity: 0.22;
+  cursor:  not-allowed;
+}
+
+.nav-counter {
+  font-size:      var(--text-sm);
+  color:          var(--c-text-dim);
+  letter-spacing: 0.14em;
+  white-space:    nowrap;
+  flex-shrink:    0;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+  .reading-area {
+    padding-top:    var(--sp-8);
+    padding-bottom: calc(var(--sp-8) * 2);
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --sidebar-w:   260px;
+    --content-max: 100%;
+  }
+
+  .reading-area { padding-top: var(--sp-6); }
+  .chapter-meta { flex-direction: column; align-items: flex-start; }
+  #chapterSignalBar { display: none; }
+
+  /* Case file mode is a desktop-only feature — hidden on mobile. */
+  #caseFileBtn { display: none !important; }
+
+  body.case-file-mode .reading-area {
+    transform: none;
+    padding:   var(--sp-5) var(--sp-4) calc(var(--sp-8) * 2);
+  }
+}
+
+
+/* ============================================================
+   PRINT
+============================================================ */
+
+@media print {
+  .lens-overlay, .atmo-background, .atmo-grid, .atmo-waves,
+  .atmo-canvas, .sidebar, .sidebar-tab, .chapter-nav,
+  .matters-block, .intro-screen, .mobile-hint, #caseFileBtn,
+  body::before, body::after, .reading-area::before {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color:      black;
+    cursor:     default;
+    font-size:  12pt;
+  }
+
+  body.case-file-mode .reading-area {
+    transform:  none;
+    box-shadow: none;
+    background: white;
+  }
+
+  .novel-text p,
+  .novel-text p:first-of-type {
+    color:     black !important;
+    opacity:   1     !important;
+    transform: none  !important;
+    font-size: 11pt;
+    max-width: none;
+  }
+}
