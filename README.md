@@ -31,7 +31,7 @@ The waveform running across the bottom of the screen is the story's progress. Th
 
 **Setting:** Velthan, a coastal city. 2051. The near future, recognizable enough to feel immediate.
 
-**The premise:** Detective Calder Voss is assigned a cold case — the death of Dr. Elias Thren, an independent physicist who worked alone in a converted marine research station on the coast. The original ruling was cardiac event, natural causes. The file was thin. Nobody had looked carefully.
+**The premise:** Detective Calder Voss is assigned a cold case the death of Dr. Elias Thren, an independent physicist who worked alone in a converted marine research station on the coast. The original ruling was cardiac event, natural causes. The file was thin. Nobody had looked carefully.
 
 Voss looks carefully.
 
@@ -39,7 +39,7 @@ What he finds is that Thren's equipment ran for six hours after he died. That th
 
 Someone knew he would come. Someone had been waiting.
 
-**What Thren was actually building:** A gravitational wave detection array of extraordinary sensitivity twelve times beyond the institutional benchmark — capable of receiving transmissions that travel backward through the gravitational medium. From the future. Thren had been receiving fragments of a signal for years. When he realized what it was, and what it meant, he built a deadman mechanism: if he died, the array would activate automatically, archive everything, and begin broadcasting forward. His death would become the transmission.
+**What Thren was actually building:** A gravitational wave detection array of extraordinary sensitivity twelve times beyond the institutional benchmark capable of receiving transmissions that travel backward through the gravitational medium. From the future. Thren had been receiving fragments of a signal for years. When he realized what it was, and what it meant, he built a deadman mechanism: if he died, the array would activate automatically, archive everything, and begin broadcasting forward. His death would become the transmission.
 
 **The Meridian:** The organization that had Thren killed. Founded thirty years prior with a stated purpose prevention of civilizational cascade through timeline intervention and correction. Their doctrine: Zero Drift, the elimination of variance. They managed cities, transferred detectives, buried analyses, maintained control. They believed that reducing uncertainty was the same as reducing harm.
 
